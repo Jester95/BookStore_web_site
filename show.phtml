@@ -1,0 +1,106 @@
+<?php
+$color="#aaddff";
+
+$id_publ=$_GET["id_publ"]; 
+$id_cat=$_GET["id_cat"]; 
+$type=$_GET["type"];
+?>
+
+<h1><?php print $id_cat ?> 성택한 카테고리</h1>
+<h1><?php print $id_publ ?>성택학 게시자</h1>
+<?php
+
+//$type = 1; 
+//$id_cat = 5;
+//$id_publ = 8;
+
+include("connect.phtml"); 
+ 
+if ($type==1) //// книги  определенного  издательства type==1 publishers
+{       
+	$askDB1="SELECT name_publ FROM  publishers WHERE id_publ=".$id_publ;//// получение с браузера выбраного publishers и отправка в бд
+	
+	$result=mysql_query($askDB1) or die("Error1"); ////Не могу выполнить запрос1!
+
+	if($row=mysql_fetch_array($result))  
+		$title=$row["name_publ"];/// получение выбраного  издательства
+	$askDB1="SELECT id_book, image, author, name_book, 
+	books.id_publ, name_publ, pages, price, books.id_cat, name_cat  
+	FROM books, publishers, categories WHERE 
+	books.id_cat=categories.id_cat AND 
+	books.id_publ=publishers.id_publ AND books.id_publ=".$id_publ;///8 
+} 
+if ($type==2) //// книги  определенной  категории  type==2 categories
+{ 
+	$askDB1="SELECT name_cat FROM categories WHERE id_cat=".$id_cat; //// получение с браузера выбраной категории и отправка в бд
+
+	$result=mysql_query($askDB1) or die("Error1!"); 
+
+	if($row=mysql_fetch_array($result))  
+		$title=$row["name_cat"];  ///// получение выбраной КАТЕГОРИИ
+	$askDB1="SELECT id_book, image, author, name_book, 
+	books.id_publ, name_publ, pages, price, books.id_cat, name_cat  
+	FROM books, publishers, categories WHERE 
+	books.id_cat=categories.id_cat 
+	AND books.id_publ=publishers.id_publ AND books.id_cat=".$id_cat;///5
+}	
+//		$askDB1="SELECT name_cat, id_cat FROM categories WHERE id_cat=".$id_cat; 
+//	$askDB1="SELECT name_cat FROM categories WHERE id_cat=1"; 
+
+$result1=mysql_query($askDB1) or die("Error2!"); 
+ 
+include("header.phtml");  
+?> 
+<tr><td bgcolor="ffffff"> 
+
+<table border="1" width="100%" align="right" > 
+<?php 
+
+while($row=mysql_fetch_array($result1))  
+{?> 
+  <tr> 
+  <td align="center"><img src="foto/<?php print $row["image"];?>"       
+      alt="<?php print $row["name_book"];?>" border="0">
+	  
+	  <center><a href="dobasket.phtml?type=1&id_book=<?php print $row["id_book"];?>"> 
+             <font size=-1>add to cart</font></a>
+	  </center>
+	
+	</td> 
+  <td> 
+	  <table> 
+		  <tr><td align="right"><i>Author: </i></td> 
+		   <td><?php print $row["author"];?></td></tr> 
+		  
+		  <tr><td align="right"><i>Name Book: </i></td> 
+		   <td><?php print $row["name_book"];?></td></tr> 
+		  
+		  <tr><td align="right"><i>Publisher: </i></td> 
+		   <td><a href="show.phtml?type=1&id_publ=<?php print $row["id_publ"];?>">
+			<?print $row["name_publ"];?></a> 
+		   </td></tr> 
+		  
+		  <tr><td align="right"><i>Pages: </i></td> 
+		   <td><?php print $row["pages"];?></td></tr> 
+		  
+		  <tr><td align="right"><i>Price: </i></td> 
+		   <td><?php print $row["price"];?>$</td></tr> 
+		  
+		  <tr><td align="right"><i>Category: </i></td> 
+		   <td><a href="show.phtml?type=2&id_cat=<?php print $row["id_cat"];?>">
+			<?php print $row["name_cat"];?></a> 
+		   </td></tr> 
+	  </table> 
+  </td> 
+  </tr> 
+<?php 
+   }
+     ?> 
+</table> 
+</td></tr>
+
+<tr><td bgcolor ="#ffffff"><center><hr><br>
+<a href = "index.phtml">GO to Home</a></center></td></tr>
+</table>
+</body>
+</html> 

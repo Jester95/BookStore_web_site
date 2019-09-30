@@ -1,0 +1,108 @@
+<?php
+$title="REGISTRATION"; 
+$color="#aaaaff"; 
+ 
+$fam=$_POST["fam"]; 
+$name=$_POST["name"]; 
+$addr=$_POST["addr"]; 
+$mail=$_POST["mail"]; 
+$pass=$_POST["pass"]; 
+$pass2=$_POST["pass2"]; 
+$login=$_POST["login"]; 
+$type=$_POST["type"]; 
+ 
+include("connect.phtml"); 
+
+if($type==1) // была нажата кнопка "Send"?
+{ 
+	 // все поля не пустые ? 
+	if($fam!="" && $name!="" && $addr!="" && $mail!="" && $login!="" && $pass!="" && $pass2!="") 
+	{ 
+		  if($pass!=$pass2) // поля пароля и повтора пароля не совпадают ?
+		  { 
+			$message="<tr><td bgcolor='#ff9999' align='center'><b>  
+			Password and password retry fields do not match!!!</b></td></tr>"; 
+		  } 
+		  else   // ищем, нет ли в базе данных пользователя с таким логином  
+	    { 
+		   $askDB1="SELECT id_cust FROM customers WHERE login='".$login."'"; 
+			 $result1=mysql_query($askDB1)  
+				or die("ERROR!"); ///Не могу выполнить запрос!
+		
+			if($row=mysql_fetch_array($result1)) // такой логин уже есть ?  
+			{ 
+			 $message="<tr><td bgcolor='#ff9999' align='center'>
+				 <b>This username already exists !!! Select another login</b></td></tr>"; 
+			 } 
+			  else // создаем нового пользователя
+			  { 
+				$askDB1="INSERT INTO customers (fam, name, addr, mail, login, pass)   
+						 VALUES('".$fam."','".$name."','".$addr."','".$mail."','".$login."','".$pass."')"; 
+				$result1=mysql_query($askDB1)  
+					  or die("ERROR!"); 
+				$message="<tr><td bgcolor='#66cc66' align='center'> 
+						 <b>You have successfully registered</b></td></tr>"; 
+				$success=true; 
+			  } 
+	    } 
+	 } 
+else  ///Не все поля заполнены!
+  $message="<tr><td bgcolor='#ff9999' align='center'> 
+     <b>Not all fields are filled !!!</b></td></tr>"; 
+} 
+ 
+include("header.phtml"); 
+print $message; 
+ 
+if(!$success) 
+{ 
+?> 
+ 
+<form action=reg.phtml method=post> 
+<tr><td align="center" bgcolor ="#ffffff"> 
+<h3><font color = "red">Asterisks are required fields</font></h3> 
+
+<table border="0" width="100%" align="right" > 
+  
+  <tr><td align="right" width="50%"><i>Surname:</i></td><td> 
+  <input type=text name=fam value="<?print $fam?>">*</td></tr> 
+  
+  <tr><td align="right"><i>Name: </i></td><td> 
+  <input type=text name=name value="<?print $name?>">*</td></tr> 
+  
+  <tr><td align="right"><i>Address: </i></td><td> 
+  <input type=text name=addr value="<?print $addr?>">*</td></tr> 
+  
+  <tr><td align="right"><i>E-mail: </i></td><td> 
+  <input type=text name=mail value="<?print $mail?>">*</td></tr> 
+  
+  <tr><td align="right"><i>Login: </i></td><td> 
+  <input type=text name=login value="<?print $login?>">*</td></tr> 
+  
+  <tr><td align="right"><i>Password: </i></td><td> 
+  <input type=password name=pass value="">*</td></tr> 
+ 
+ <tr><td align="right"><i>Repeat password: </i></td><td> 
+  <input type=password name=pass2 value="">*</td></tr>  
+  
+  <tr><td></td><td> 
+  <input type="checkbox" value="1" name="subscribe"> 
+  
+     <i>Subscribe to our newsletter</i></td></tr> 
+   <input type=hidden value=1 name=type> 
+   
+   <tr><td align="right"></td><td> 
+    <input type=submit value="Send"></td></tr>  
+</table> 
+</form> 
+</td></tr> 
+<?php 
+mysql_close(); 
+} 
+?> 
+<tr><td bgcolor ="#ffffff"><center><hr><br>
+<a href = "index.phtml">GO to Home</a></center></td></tr>
+</table>
+</body>
+</html>
+

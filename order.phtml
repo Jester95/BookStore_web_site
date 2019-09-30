@@ -1,0 +1,99 @@
+<?php 
+$id_bask=$_COOKIE["id_bask"]; 
+ 
+$title="Your order"; 
+$color="#ffaaff"; 
+include("header.phtml"); 
+include("connect.phtml"); 
+ 
+$askDB1="SELECT COUNT(*) as count FROM basket_books WHERE id_bask='".$id_bask."'"; 
+$result1=mysql_query($askDB1)  
+     or die("ERORR2!"); 
+$row=mysql_fetch_array($result1); 
+if($row["count"]==0) 
+ 
+{ 
+?>
+<tr><td bgcolor='#ff9999' align='center'> 
+  <b>Your basket is empty!</b></td></tr><!-->ваша карзина пуста<--> 
+<?php 
+} 
+else 
+{ 
+$askDB1="SELECT author, name_book, pages, price, quantity,  
+   id_bask, books.id_book FROM books, basket_books WHERE books.id_book=basket_books.id_book AND id_bask='".$id_bask."'"; 
+$result1=mysql_query($askDB1)  
+   or die("ERORR3!"); ////Не могу выполнить запрос2
+ 
+?> 
+<tr>
+<td bgcolor ="#ffffff"> 
+<table border="1" width="100%" align="center" > 
+
+<tr><td align="center"><i>Author: </i></td> 
+<td align="center"><i>Name Book: </i></td> 
+<td align="center"><i>Price: </i></td> 
+<td align="center"><i>Quantity: </i></td></tr> 
+</tr>
+<?php 
+$sum=0; 
+	while($row=mysql_fetch_array($result1))  
+{ 
+?> 
+
+  <tr> 
+   <td><?php print $row["author"];?></td> 
+   <td><b><?php print $row["name_book"];?></b></td> 
+   <td><?php print $row["price"];?></td> 
+   <td><?php print $row["quantity"];?></td>  
+  </tr> 
+
+<?php 
+  $sum=$sum+$row["price"]*$row["quantity"]; 
+} 
+?> 
+<tr><td></td>
+	<td align="right"><i>TOTAL:</i></td> 
+	<td><?php print $sum;?></td>
+	<td></td>
+</tr>
+ 
+</table> 
+<tr>
+<td bgcolor ="#ffffff">
+	<br><b>배달 방법:</b>  
+	  <input type="radio" value=1 name="dostavka" checked>우체국 택베
+	  <input type="radio" value=2 name="dostavka">배달부 
+	  <input type="radio" value=3 name="dostavka">직접 수령 
+	</td>
+</tr> 
+<tr>
+	<td bgcolor ="#ffffff">주제에 대한 무료 카탈로그를 보내려면 다음을 수행하십시오. 
+		  <select name="bonus"> 
+		  <option value="0"> 
+		  
+		  <?php $askDB1="SELECT * FROM categories"; 
+				$result1=mysql_query($askDB1)  
+				or die("ERORR!"); 
+			 while($row=mysql_fetch_array($result1)) 
+			 {?> 
+			  
+			  <option value="<?php print $row["id_cat"]?>">  
+			  <?php print $row["name_cat"]; 
+			 } 
+		  ?>  
+	</td>
+</tr> 
+<tr>
+		<td bgcolor="ffffff"><center><a <!-->-Sending order fail <--->> 
+			<b>주문 보내기</b></a></center>
+		</td>
+</tr> 
+<?php 
+} 
+?>
+<tr><td bgcolor ="#ffffff"><center><hr><br>
+<a href = "index.phtml">GO to Home</a></center></td></tr>
+</table>
+</body>
+</html> 

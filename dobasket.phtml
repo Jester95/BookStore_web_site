@@ -1,0 +1,67 @@
+<?php
+$type=$_GET["type"]; 
+$id_book=$_GET["id_book"]; //id_book = 1
+$id_bask=$_COOKIE["id_bask"]; 
+ 
+include("connect.phtml"); 
+ 
+if($type==1) // положить в корзину 
+{ 
+  $askDB="SELECT * FROM basket_books WHERE  
+           id_book=".$id_book." AND id_bask='".$id_bask."'"; 
+  $result=mysql_query($askDB)  
+           or die("EROOR1!"); // не могу выполнить запрос к базе данной
+		   
+  if ($row=mysql_fetch_array($result)) // естьли книга в карзине???? если есть то он добавленяет +1!!!!   
+  { 
+    $askDB="UPDATE basket_books SET quantity=quantity+1 WHERE  
+              id_book=".$id_book." AND id_bask='".$id_bask."'";/// добавление в карзину +1 в книгу 
+  } 
+	  else /// если нету книги то он добавляет новую книгу в корзину
+	  { 
+		$askDB="INSERT INTO basket_books (id_bask, id_book,  
+					 quantity) VALUES ('".$id_bask."',".$id_book.",1)"; 
+	  } 
+			mysql_query($askDB); 
+} 
+
+
+if($type==2) // уменьшить количество 
+{ 
+  $askDB="SELECT * FROM basket_books WHERE  
+           id_book=".$id_book." AND id_bask='".$id_bask."'"; 
+  $result=mysql_query($askDB)  
+               or die("ERROR1!"); 
+	  if ($row=mysql_fetch_array($result)) 
+	  { 
+			if ($row["quantity"]>1) ///когда больше одной книги то он добавляет +1 к количеству
+			{ 
+			$askDB="UPDATE basket_books SET quantity=quantity-1 WHERE       
+					 id_book=".$id_book." AND id_bask='".$id_bask."'"; 
+			} 
+				else //когда меньше одного то он удаляет книгу из корзины
+				{ 
+				$askDB="DELETE FROM basket_books WHERE  
+						 id_book=".$id_book." AND id_bask='".$id_bask."'"; 
+				} 
+       } 
+  mysql_query($askDB); 
+   
+} 
+
+if($type==3) // удалить из корзины 
+	{ 
+	  $askDB="DELETE FROM basket_books WHERE  
+			 id_book=".$id_book." AND id_bask='".$id_bask."'"; 
+	  mysql_query($askDB); 
+	} 
+ 
+if($type==4) // очистить корзину 
+	{ 
+	  $askDB="DELETE FROM basket_books WHERE   
+			   id_bask='".$id_bask."'"; 
+	  mysql_query($askDB); 
+	} 
+ 
+include("basket.phtml"); ///подключение к странице КАРЗИНА 
+?> 

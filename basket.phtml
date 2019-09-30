@@ -1,0 +1,95 @@
+<?php 
+$id_bask=$_COOKIE["id_bask"];//читаем значение ключика из глобального массива
+ 
+$title="Your shopping cart";   //Ваша корзина
+$color="#ddaaff"; 
+include("header.phtml"); 
+include("connect.phtml"); 
+ 
+   /// проверяем, не является ли корзина пустой: 
+$askDB="SELECT COUNT(*) as count FROM basket_books WHERE id_bask='".$id_bask."'"; 
+$result1=mysql_query($askDB)  
+     or die("Error1!"); 
+$row=mysql_fetch_array($result1); 
+if($row["count"]==0) 
+{ 
+?> 
+  <tr><td bgcolor='#ff9999' align='center'> 
+        <b>Your basket is empty!</b></td></tr>
+
+<?php 
+} 
+else /// Если корзина не пуста, выдаем ее содержимое на экран
+{ 
+$askDB="SELECT author, name_book, pages, price, quantity,    
+   id_bask, books.id_book FROM books, basket_books WHERE    
+   books.id_book=basket_books.id_book AND id_bask='".$id_bask."'"; 
+$result1=mysql_query($askDB) or die("Error2!"); 
+?> 
+
+<tr><td bgcolor ="#ffffff"> 
+<table border="1" width="100%" align="center" > 
+	<tr>
+		<td align="center"><i>Author: </i></td> 
+		<td align="center"><i>Name Book: </i></td> 
+		<td align="center"><i>Price: </i></td> 
+		<td align="center"><i>Quantity: </i></td> 
+		<td align="center"><i>Deleting a Book: </i></td>
+	</tr> 
+  <?php 
+  
+	$sum=0;  
+  
+  while($row=mysql_fetch_array($result1)) //// если запрос из базы данный успешный то он создает таблицу с и записывает туда данные из ДБ
+	{ 
+	?> 
+  
+  <tr> 
+  <td><?php print $row["author"];?></td> 
+  
+  <td><b><?php print $row["name_book"];?></b></td>
+  
+  <td><?php print $row["price"];?></td> 
+  
+  <td><?php print $row["quantity"];?>  
+     <a href="dobasket.phtml?type=1&id_book= 
+	       <?php print $row["id_book"];?>" title="add">[ + ]</a>  
+	 <a href="dobasket.phtml?type=2&id_book= 
+			<?php print $row["id_book"];?>" title="reduce">[ - ]</a>   
+  </td> 
+  <td> <a href="dobasket.phtml?type=3&id_book=
+             <?php print $row["id_book"];?>">Remove</a>
+  </td> 
+  </tr>
+  
+<?php  
+  $sum=$sum+$row["price"]*$row["quantity"]; //// пермножает цену на кол-во книг
+}
+?> 
+
+
+<tr>
+<td></td>
+	<td align="right"><i>TOTAL:</i></td>
+			<td align="right"><?print $sum;?></td>
+</tr> 
+
+</table> 
+
+<tr><td bgcolor ="#ffffff" >
+		<center><a href=dobasket.phtml?type=4> 
+			<b>Empty trash</b>
+				</a></center></td></tr> 
+
+<tr><td bgcolor ="#ffffff" >
+		<center><a href="order.phtml"> 
+			<b>Checkout</b>
+				</a></center></td></tr>
+<?php
+} 
+?>
+<tr><td bgcolor ="#ffffff"><center><hr><br>
+<a href = "index.phtml">GO to Home</a></center></td></tr>
+</table>
+</body>
+</html>

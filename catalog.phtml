@@ -1,0 +1,51 @@
+<?php
+$title="CATALOG"; 
+$color="#aaddff"; 
+ 
+include("header.phtml"); 
+include("connect.phtml"); 
+  
+$askDB1="SELECT * FROM publishers ORDER BY name_publ"; ////Выполнение двух запросов
+$result1=mysql_query($askDB1) or  
+      die("Can not query the table publishers(1)!"); 
+$askDB2="SELECT * FROM categories ORDER BY name_cat"; 
+$result2=mysql_query($askDB2) or 
+      die("Can not query the table categories(2)!"); 
+?> 
+
+<tr><td bgcolor ="#ffffff"> 
+<table border=0 width=100%> 
+<tr><td width="50%"><center><h3>Publisher</h3></center><ul> 
+
+<?php
+while($row=mysql_fetch_array($result1))////из названий издательств и категорий формируются гиперссылки
+{
+	?> 
+  <li><a href="show.phtml?type=1&id_publ=<?php print $row["id_publ"];?>"> 
+           <?php print $row["name_publ"]?></a> 
+<?php 
+
+}
+     ?> 
+</ul></td> 
+ 
+<td width="50%"><center><h3>Category</h3></center><ul> 
+<?php   
+while($row=mysql_fetch_array($result2))  
+{
+	?> 
+  <li><a href="show.phtml?type=2&id_cat=<?php print $row["id_cat"];?>"> 
+           <?php print $row["name_cat"];?></a> 
+<?php
+   }
+	?> 
+</ul></td> 
+</tr> 
+</table> 
+</td></tr> 
+
+<tr><td bgcolor ="#ffffff"><center><hr><br>
+<a href = "index.phtml">GO to Home</a></center></td></tr>
+</table>
+</body>
+</html>

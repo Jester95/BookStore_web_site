@@ -1,0 +1,45 @@
+<?php
+$title="Authorization"; 
+$color="#aaaaff"; 
+ 
+$pass=$_POST["pass"]; 
+$login=$_POST["login"];
+ 
+ 
+ 
+include("connect.phtml"); 
+ 
+$strSQL1="SELECT * FROM customers WHERE login='".$login."' AND pass='".$pass."'"; 
+
+$result1=mysql_query($strSQL1)  
+  or die("ERORR!"); 
+
+  if($row=mysql_fetch_array($result1))// пользователь с таким логином и паролем найден ?
+{ 
+  $start=session_start(); 
+  $_session("log");   // создадим сеансовую переменную для ФИО покупателя 
+  $_session["log"]=$row["fam"]." ".$row["name"]; 
+  
+  $_session("id");    // создадим сеансовую переменную для ID покупателя 
+  
+  $_session["id"]=$row["id_cust"]; ///Вы успешно авторизованы
+  $message="<tr><td bgcolor='#66cc66' align='center'> 
+   <b>You have been successfully authorized</b></td></tr>"; 
+  $success=true; 
+} 
+else ///Таких логина/ пароля не существует!!!
+{ 
+  $message="<tr><td bgcolor='#ff9999' align='center'> 
+  <b>Such login / password does not exist !!!</b></td></tr>"; 
+} 
+mysql_close(); 
+  
+  include("header.phtml"); 
+  print $message; 
+?> 
+
+<tr><td bgcolor ="#ffffff"><center><hr><br>
+<a href = "index.phtml">GO to Home</a></center></td></tr>
+</table>
+</body>
+</html>
